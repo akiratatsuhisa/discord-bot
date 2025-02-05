@@ -12,21 +12,43 @@ app.get("/", verifySignature(), (context) => {
 });
 
 app.post("/", verifySignature(), async (context) => {
+  const discord = context.get("services").discord;
+
   const interaction = context.get("body");
 
-  if (interaction.type === InteractionType.PING) {
-    return context.json({ type: InteractionResponseType.PONG });
-  }
+  switch (interaction.type) {
+    case InteractionType.PING:
+      return context.json({ type: InteractionResponseType.PONG });
 
-  if (interaction.type === InteractionType.APPLICATION_COMMAND) {
-    const commandsService = context.get("services").commands;
+    case InteractionType.APPLICATION_COMMAND: {
+      try {
+        const result = await discord.executeCommand(interaction.data);
 
-    try {
-      const result = await commandsService.execute(interaction.data);
+        return context.json(result);
+      } catch (e) {
+        console.error(e);
+        return context.json({ error: "Unknown Command" }, { status: 400 });
+      }
+    }
 
-      return context.json(result);
-    } catch {
-      return context.json({ error: "Unknown Command" }, { status: 400 });
+    case InteractionType.MESSAGE_COMPONENT: {
+      try {
+        const result = await discord.executeMessageComponent(
+          interaction.data,
+          interaction.message
+        );
+
+        return context.json(result);
+      } catch (e) {
+        console.error(e);
+        return context.json({ error: "Unknown update" }, { status: 400 });
+      }
+    }
+
+    case InteractionType.MODAL_SUBMIT: {
+    }
+
+    case InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE: {
     }
   }
 
@@ -34,10 +56,10 @@ app.post("/", verifySignature(), async (context) => {
 });
 
 app.post("/register", verifyRegister(), async (context) => {
-  const commandsService = context.get("services").commands;
+  const discord = context.get("services").discord;
 
   try {
-    const result = await commandsService.register();
+    const result = await discord.registerSlash();
 
     return context.json(result);
   } catch (error: unknown) {

@@ -1,13 +1,11 @@
 import { Context, HonoEnv } from "hono";
 
-import { CommandsService } from "./commands";
+import { DiscordService } from "./discord";
 import { BasicService } from "./basic";
-
-export { CommandsService };
 
 export const initServices = (context: Context<HonoEnv>) => {
   return {
-    commands: new CommandsService(context),
+    discord: new DiscordService(context),
     basic: new BasicService(context),
   };
 };

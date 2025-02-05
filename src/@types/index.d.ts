@@ -18,4 +18,29 @@ declare module "hono" {
   }
 }
 
+declare global {
+  namespace DiscordApplicationCommand {
+    interface Data {
+      name: string;
+      options: Array<
+        {
+          name: string;
+        } & ({ type: 3; value: string } | { type: 4; value: number })
+      >;
+    }
+  }
+
+  namespace DiscordMessageComponent {
+    interface Data {
+      component_type: number;
+      custom_id: string;
+    }
+
+    interface Message {
+      content: string;
+      components: Array<any>;
+    }
+  }
+}
+
 export {};

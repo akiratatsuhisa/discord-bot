@@ -1,24 +1,38 @@
 import { Context, HonoEnv } from "hono";
 import { BaseService } from "./base";
-import { HELLO_COMMAND } from "../commands";
+import { COMMANDS } from "../commands";
 
-export class CommandsService extends BaseService {
+export class DiscordService extends BaseService {
   constructor(context: Context<HonoEnv>) {
     super(context);
   }
 
-  async execute(data: any): Promise<any> {
+  async executeCommand(data: DiscordApplicationCommand.Data): Promise<any> {
     const services = this.context.get("services");
 
     switch (data.name.toLowerCase()) {
-      case HELLO_COMMAND.name:
+      case COMMANDS.HELLO.name:
         return services.basic.hello();
+      case COMMANDS.COUNTER.name:
+        return services.basic.initializeCounter(data);
+    }
+  }
+
+  async executeMessageComponent(
+    data: DiscordMessageComponent.Data,
+    message: DiscordMessageComponent.Message
+  ): Promise<any> {
+    const services = this.context.get("services");
+
+    switch (data.custom_id) {
+      case "increment_button":
+        return services.basic.updateCounter(message);
     }
 
     throw new Error("Unknown Command");
   }
 
-  async register() {
+  async registerSlash() {
     const token = this.context.env.DISCORD_BOT_TOKEN;
     const applicationId = this.context.env.DISCORD_APPLICATION_ID;
 
@@ -42,7 +56,7 @@ export class CommandsService extends BaseService {
         Authorization: `Bot ${token}`,
       },
       method: "PUT",
-      body: JSON.stringify([HELLO_COMMAND]),
+      body: JSON.stringify(Object.values(COMMANDS)),
     });
 
     if (response.ok) {
