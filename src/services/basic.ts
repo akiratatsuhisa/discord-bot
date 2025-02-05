@@ -8,13 +8,11 @@ export class BasicService extends BaseService {
   }
 
   async hello() {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    return {
+    return Promise.resolve({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: "Chào bạn mình tới đây từ chiều",
+        content: "Hello from cloudflare with love!",
       },
-    };
+    });
   }
 }

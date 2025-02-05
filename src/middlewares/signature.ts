@@ -21,6 +21,7 @@ export const verifySignature: () => MiddlewareHandler<HonoEnv> =
 
     const jsonBody = JSON.parse(body);
     context.set("body", jsonBody);
+    console.log("request body:", jsonBody);
 
     await next();
   };
