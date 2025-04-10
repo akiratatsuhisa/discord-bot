@@ -2,10 +2,12 @@ import { Hono, HonoEnv } from "hono";
 import { InteractionResponseType, InteractionType } from "discord-interactions";
 
 import { verifySignature, services, verifyRegister } from "./middlewares";
+import { database } from "./middlewares/database";
 
 const app = new Hono<HonoEnv>();
 
 app.use("*", services());
+app.use("*", database());
 
 app.get("/", verifySignature(), (context) => {
   return context.text(`👋 ${context.env.DISCORD_APPLICATION_ID}`);
