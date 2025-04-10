@@ -6,4 +6,8 @@ export abstract class BaseService {
   constructor(context: Context<HonoEnv>) {
     this.context = context;
   }
+
+  protected get db() {
+    return this.context.get("db");
+  }
 }

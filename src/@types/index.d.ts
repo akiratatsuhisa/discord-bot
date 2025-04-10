@@ -6,6 +6,7 @@ declare module "hono" {
   interface ContextVariableMap {
     body: any;
     services: Services;
+    db: ReturnType<typeof drizzle>;
   }
 
   interface HonoEnv {
@@ -14,6 +15,7 @@ declare module "hono" {
       DISCORD_BOT_TOKEN: string;
       DISCORD_PUBLIC_KEY: string;
       REGISTER_TOKEN: string;
+      DB: D1Database;
     };
   }
 }
